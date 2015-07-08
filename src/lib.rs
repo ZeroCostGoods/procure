@@ -42,24 +42,28 @@ pub struct CpuTimes {
 impl CpuTimes {
 
     fn from_line(line: &str) -> Result<CpuTimes> {
-        let parts: Vec<_> = line.split_whitespace().skip(1).collect();
+        let parts: Vec<_> = line.split_whitespace()
+                                .skip(1)
+                                .map(|elem| elem.parse::<u64>().unwrap_or(0))
+                                .collect();
+
         Ok(CpuTimes{
-            user: try!(parts[0].parse().map_err(ProcureError::ParseError)),
-            nice: try!(parts[1].parse().map_err(ProcureError::ParseError)),
-            system: try!(parts[2].parse().map_err(ProcureError::ParseError)),
-            idle: try!(parts[3].parse().map_err(ProcureError::ParseError)),
-            iowait: try!(parts[4].parse().map_err(ProcureError::ParseError)),
-            irq: try!(parts[5].parse().map_err(ProcureError::ParseError)),
-            softirq: try!(parts[6].parse().map_err(ProcureError::ParseError)),
-            steal: try!(parts.get(7).unwrap_or(&"0").parse().map_err(ProcureError::ParseError)),
-            guest: try!(parts.get(8).unwrap_or(&"0").parse().map_err(ProcureError::ParseError)),
-            guest_nice: try!(parts.get(9).unwrap_or(&"0").parse().map_err(ProcureError::ParseError)),
+            user: parts[0],
+            nice: parts[1],
+            system: parts[2],
+            idle: parts[3],
+            iowait: parts[4],
+            irq: parts[5],
+            softirq: parts[6],
+            steal: *parts.get(7).unwrap_or(&0),
+            guest: *parts.get(8).unwrap_or(&0),
+            guest_nice: *parts.get(9).unwrap_or(&0),
         })
     }
 
-    fn get_total_times_from_path(stat_path: &Path) -> Result<CpuTimes> {
+    fn total_from_path(stat_path: &Path) -> Result<CpuTimes> {
         let fh = try!(File::open(stat_path).map_err(ProcureError::IoError));
-        let reader = BufReader::new(fh);
+        let reader = BufReader::with_capacity(2048, fh);
 
         let line = match reader.lines().next() {
             Some(Ok(line)) => line,
@@ -72,19 +76,18 @@ impl CpuTimes {
 
     }
 
-    pub fn get_total_times() -> Result<CpuTimes> {
-        CpuTimes::get_total_times_from_path(Path::new("/proc/stat"))
+    pub fn total() -> Result<CpuTimes> {
+        CpuTimes::total_from_path(Path::new("/proc/stat"))
     }
 
-    fn get_per_cpu_times_from_path(stat_path: &Path) -> Result<Vec<CpuTimes>> {
+    fn per_cpu_from_path(stat_path: &Path) -> Result<Vec<CpuTimes>> {
+
         let num_cpus = sysconf(SysconfVariable::ScNprocessorsOnln).unwrap_or(0) as usize;
         let fh = try!(File::open(stat_path).map_err(ProcureError::IoError));
-        let reader = BufReader::new(fh);
+        let reader = BufReader::with_capacity(2048, fh);
         let mut cpus: Vec<CpuTimes> = Vec::with_capacity(num_cpus);
-        let mut lines = reader.lines();
-        lines.next();
 
-        for line in lines {
+        for line in reader.lines().skip(1) {
             let line = match line {
                 Ok(line) => line,
                 _ => return Err(ProcureError::RuntimeError(
@@ -99,54 +102,61 @@ impl CpuTimes {
         Ok(cpus)
     }
 
-    pub fn get_per_cpu_times() -> Result<Vec<CpuTimes>> {
-        CpuTimes::get_per_cpu_times_from_path(Path::new("/proc/stat"))
+    pub fn per_cpu() -> Result<Vec<CpuTimes>> {
+        CpuTimes::per_cpu_from_path(Path::new("/proc/stat"))
     }
 
 }
 
+#[cfg(test)]
+mod tests {
 
-#[test]
-fn test_total_times() {
-    assert_eq!(
-        CpuTimes::get_total_times_from_path(Path::new("testdata/stat-0001")).unwrap(),
-        CpuTimes {
-            user: 7969864,
-            nice: 6735,
-            system: 1633028,
-            idle: 43336958,
-            iowait: 48613,
-            irq: 180,
-            softirq: 5043,
-            steal: 0,
-            guest: 0,
-            guest_nice: 0,
-        }
-    );
-}
+    use super::*;
+    use std::path::Path;
+
+    #[test]
+    fn test_total() {
+        assert_eq!(
+            CpuTimes::total_from_path(Path::new("testdata/stat-0001")).unwrap(),
+            CpuTimes {
+                user: 7969864,
+                nice: 6735,
+                system: 1633028,
+                idle: 43336958,
+                iowait: 48613,
+                irq: 180,
+                softirq: 5043,
+                steal: 0,
+                guest: 0,
+                guest_nice: 0,
+            }
+        );
+    }
 
 
-#[test]
-fn test_per_cpu_times() {
-    assert_eq!(
-        CpuTimes::get_per_cpu_times_from_path(Path::new("testdata/stat-0001")).unwrap(),
-        vec![
-            CpuTimes {
-                user: 2036657, nice: 3176, system: 538690, idle: 40502503, iowait: 48123,
-                irq: 180, softirq: 4562, steal: 0, guest: 0, guest_nice: 0,
-            },
-            CpuTimes {
-                user: 1895483, nice: 1224, system: 350858, idle: 947119, iowait: 194,
-                irq: 0, softirq: 244, steal: 0, guest: 0, guest_nice: 0,
-            },
-            CpuTimes {
-                user: 2129079, nice: 1332, system: 413982, idle: 937158, iowait: 218,
-                irq: 0, softirq: 138, steal: 0, guest: 0, guest_nice: 0,
-            },
-            CpuTimes {
-                user: 1908644, nice: 1002, system: 329497, idle: 950176, iowait: 76,
-                irq: 0, softirq: 96, steal: 0, guest: 0, guest_nice: 0,
-            },
-        ]
-    );
+    #[test]
+    fn test_per_cpu() {
+        assert_eq!(
+            CpuTimes::per_cpu_from_path(Path::new("testdata/stat-0001")).unwrap(),
+            vec![
+                CpuTimes {
+                    user: 2036657, nice: 3176, system: 538690, idle: 40502503, iowait: 48123,
+                    irq: 180, softirq: 4562, steal: 0, guest: 0, guest_nice: 0,
+                },
+                CpuTimes {
+                    user: 1895483, nice: 1224, system: 350858, idle: 947119, iowait: 194,
+                    irq: 0, softirq: 244, steal: 0, guest: 0, guest_nice: 0,
+                },
+                CpuTimes {
+                    user: 2129079, nice: 1332, system: 413982, idle: 937158, iowait: 218,
+                    irq: 0, softirq: 138, steal: 0, guest: 0, guest_nice: 0,
+                },
+                CpuTimes {
+                    user: 1908644, nice: 1002, system: 329497, idle: 950176, iowait: 76,
+                    irq: 0, softirq: 96, steal: 0, guest: 0, guest_nice: 0,
+                },
+            ]
+        );
+    }
+
 }
