@@ -15,4 +15,16 @@ script:
 
 notifications:
   email:
-      on_success: never
+    on_success: never
+
+env:
+  global:
+    secure: oZcLiqfp+WStXpjkFTaxDjn7Rfnm5deQ7lsANBRyTkh1GNYo2xSkWr5iRv0F/UXtmBG4qDdVE0LSLhTCZsQW5VipMY0smWokYk8aEp4PwVntCbpT6mPxPl/2jU3ZSbnr5d/tjOu8MhdFNaIE0MP3o6jnNnOlhBq6CNT19FFKp+gOoImMWYKc8sQ0UFW102I9cM6jIbSFf4Tp8iwP6vSm2cs61QCxycgAbvZItbQrMKAVoGl08aXU0nZ652QgofHXkWGAI82dXOeF5ftfq8L0NSMTudPn1XNjYSSno6u3ZrifkokzWlTFVIRnhN6iEzIeY3f0R1KJFN2TnUdi4H9qIcHNrn0PTZNkBEuwPU35/EolSw9umD+UuF5ViK7zbN14F+0SKEqXB+XD32RNtnqUEJBfs7d9D2uHDERbHykMuD4Q8t5wOPNCKI6VnBGjIJXxevGoRGIE9uDi5cYYI9xV1MaW7OucSEjS1lcytPfEu21msUO1gwDPP7Ju6hmEGbZ++Ssspaa1HSoSMf/2JqM07R3coGGxyTSQvLbzhFLCOUy4+Ztjmx9VJV8vP2hLBnVHblTHVaPmNrYTcvK2Lom+Y591u3JkVQOeaUSz5zY4xtOEYEsSwKPC/P4/eCiz8FWm/JvYcqQH/Ig0vdhX7UpQG2M/DUQ8JIDv8pcYzBVLZbw=
+
+after_success: |
+  [ $TRAVIS_BRANCH = master ] &&
+  [ $TRAVIS_PULL_REQUEST = false ] &&
+  echo '<meta http-equiv=refresh content=0;url=procure/index.html>' > target/doc/index.html &&
+  pip install ghp-import --user $USER &&
+  $HOME/.local/bin/ghp-import -n target/doc &&
+  git push -fq https://${TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
