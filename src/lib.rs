@@ -1,3 +1,3 @@
 extern crate sysconf;
 
-pub mod procfs;
+pub mod cpu;
