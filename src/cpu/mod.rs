@@ -1,23 +1,11 @@
 
-use std::result;
 use std::path::Path;
 use std::fs::File;
-use std::io;
 use std::io::{BufRead,BufReader};
-use std::num::ParseIntError;
 
 use sysconf::{sysconf,SysconfVariable};
 
-
-pub type Result<T> = result::Result<T, ProcureError>;
-
-
-#[derive(Debug)]
-pub enum ProcureError {
-    RuntimeError(String),
-    IoError(io::Error),
-    ParseError(ParseIntError),
-}
+use super::{Result,ProcureError};
 
 
 #[derive(Debug, PartialEq)]
