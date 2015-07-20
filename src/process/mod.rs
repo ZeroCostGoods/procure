@@ -15,8 +15,13 @@ impl Iterator for Pids {
 
 fn pids_from_path(proc_path: &str) -> Pids {
     let iter = fs::read_dir(proc_path).unwrap()
+        // Process directories might have gone away since
+        // the directory was read. It's fine to ignore those.
         .filter_map(|entry| entry.ok())
+        // Map entry to a string, removing it if it fails to
+        // parse as unicode.
         .filter_map(|entry| entry.file_name().into_string().ok())
+        // Remove any entries that can't be converted to an integer.
         .filter_map(|entry| entry.parse::<i32>().ok());
     Pids{iter: Box::new(iter)}
 }
