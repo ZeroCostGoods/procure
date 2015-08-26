@@ -1,5 +1,5 @@
 # procure
-[![Build Status](https://travis-ci.org/gmjosack/procure.svg?branch=master)](https://travis-ci.org/gmjosack/procure)
+[![Build Status](https://travis-ci.org/getprocure/procure.svg?branch=master)](https://travis-ci.org/getprocure/procure)
 [![Crates.io](https://img.shields.io/crates/v/procure.svg)](https://crates.io/crates/procure)
 
 ### Description
@@ -22,4 +22,4 @@ extern crate procure;
 
 ### Documentation
 
-Head over to http://gmjosack.github.io/procure for the documentation.
+Head over to http://getprocure.github.io/procure for the documentation.

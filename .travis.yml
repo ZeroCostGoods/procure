@@ -1,26 +1,21 @@
 language: rust
-
 rust:
-  - 1.1.0
-  - beta
-  - nightly
-
+- 1.1.0
+- 1.2.0
+- beta
+- nightly
 os:
-  - linux
-
+- linux
 script:
-  - cargo build --verbose
-  - cargo test --verbose
-  - cargo doc
-
+- cargo build --verbose
+- cargo test --verbose
+- cargo doc
 notifications:
   email:
     on_success: never
-
 env:
   global:
-    secure: oZcLiqfp+WStXpjkFTaxDjn7Rfnm5deQ7lsANBRyTkh1GNYo2xSkWr5iRv0F/UXtmBG4qDdVE0LSLhTCZsQW5VipMY0smWokYk8aEp4PwVntCbpT6mPxPl/2jU3ZSbnr5d/tjOu8MhdFNaIE0MP3o6jnNnOlhBq6CNT19FFKp+gOoImMWYKc8sQ0UFW102I9cM6jIbSFf4Tp8iwP6vSm2cs61QCxycgAbvZItbQrMKAVoGl08aXU0nZ652QgofHXkWGAI82dXOeF5ftfq8L0NSMTudPn1XNjYSSno6u3ZrifkokzWlTFVIRnhN6iEzIeY3f0R1KJFN2TnUdi4H9qIcHNrn0PTZNkBEuwPU35/EolSw9umD+UuF5ViK7zbN14F+0SKEqXB+XD32RNtnqUEJBfs7d9D2uHDERbHykMuD4Q8t5wOPNCKI6VnBGjIJXxevGoRGIE9uDi5cYYI9xV1MaW7OucSEjS1lcytPfEu21msUO1gwDPP7Ju6hmEGbZ++Ssspaa1HSoSMf/2JqM07R3coGGxyTSQvLbzhFLCOUy4+Ztjmx9VJV8vP2hLBnVHblTHVaPmNrYTcvK2Lom+Y591u3JkVQOeaUSz5zY4xtOEYEsSwKPC/P4/eCiz8FWm/JvYcqQH/Ig0vdhX7UpQG2M/DUQ8JIDv8pcYzBVLZbw=
-
+  - secure: fjaqUKTiwvw4jlrgDtEWhawPZ3nybz9KeS+o5hs/KADSc3O7O/FCGNkuPeDEixLRGiS31gfM4+yPQRF40MAHRYda495Q4SEdd4yFA4jJebZUq85S6vlbg/YgNNzN6becdTV3VtfnDg/RcHpz8wS42lkXwq6LGCoWrh8GU8BGr8t//EcBYd8yQ/ihS6OBUm1BLe6oQc7/FRl0CSA65orh3NwXmytY2dOMG2nquk/WZDQaBLDw8Metfdz3y4mjGTLNPEnfaYEie43yxII0SS1C+KM3Bqqj6mx5dtUTMIE91u4k2IQNbbAZjQXSfDJfVeSX3rPyTQx0v7lFhBUlrL0NMS59/hrbpMJIxg7Kfg4FsFh9ttb2yU0IQBfbSMjFOpUyA0WmwWjmNruh5bkdiSO1ueyk5Sv9fmt7j8oGRH5gwpYfOovRrTa4GZ4HheNT2xmAtnw+jD3OPoSzHXpmKJdn7xSpT9vD0tepvu0poxqwekKtBgY4FGbCk40sL2s1y9c4O+NUv+ZtBujEs5L9kpIgMrKdXbanU343kwbDNnyesg80pPBPwvQ2W+6ZBg/Klgf7DUwuM1UcgJ6CcHOvXO3TdWuCpeWilD2uxIUZaiVYnXL26YgRoX7cZfLxH126m/q7gI3cgYg/gJmsHUVq1Djcn8Oz83J4PU+Ckm0KfJgvTDo=
 after_success: |
   [ $TRAVIS_BRANCH = master ] &&
   [ $TRAVIS_PULL_REQUEST = false ] &&

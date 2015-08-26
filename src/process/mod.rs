@@ -39,6 +39,6 @@ mod tests {
     fn test_pids_from_path() {
         let mut pids: Vec<i32> = super::pids_from_path("testdata/proc").collect();
         pids.sort();
-        assert_eq!(pids, vec![1, 33, 68]);
+        assert_eq!(pids, vec![1, 16018, 24064, 24126]);
     }
 }

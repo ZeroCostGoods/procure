@@ -1,12 +1,11 @@
 [package]
 name = "procure"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Gary M. Josack <gary@byoteki.com>"]
-repository = "https://github.com/gmjosack/procure"
-documentation = "http://gmjosack.github.io/procure"
+repository = "https://github.com/getprocure/procure"
+documentation = "http://getprocure.github.io/procure"
 license = "Apache-2.0"
 description = "Rust Library for interfacing with /proc"
 
 [dependencies]
 sysconf = "*"
-
