@@ -1,3 +1,6 @@
+//! Procure is a library for grabbing various types of metrics from a
+//! Linux system.
+
 // Externs
 extern crate sysconf;
 
@@ -7,17 +10,16 @@ use std::io;
 use std::result;
 use std::num::ParseIntError;
 
-
 // Exports
 pub mod cpu;
 pub mod process;
 
+/// Custom Result type many `procure` methods return
+pub type Result<T> = result::Result<T, Error>;
 
-pub type Result<T> = result::Result<T, ProcureError>;
-
-
+/// Custom Error type returned with `procure` [`Result`](type.Result.html)'s
 #[derive(Debug)]
-pub enum ProcureError {
+pub enum Error {
     RuntimeError(String),
     IoError(io::Error),
     ParseError(ParseIntError),

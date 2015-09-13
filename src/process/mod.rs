@@ -1,3 +1,5 @@
+//! Process Metrics
+
 use std::fs;
 use std::iter::Iterator;
 
