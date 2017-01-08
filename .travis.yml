@@ -1,22 +1,36 @@
+sudo: false
 language: rust
+
+# Run builds for all the trains (and more)
 rust:
-- nightly
+  - nightly
+  - beta
+  - stable
+  # Minimum usable version of rust required.
+  - 1.1.0
+
+# Load travis-cargo
+before_script:
+  - |
+      pip install 'travis-cargo<0.2' --user &&
+      export PATH=$HOME/.local/bin:$PATH
+
 os:
-- linux
+  - linux
+
 script:
-- cargo build --verbose
-- cargo test --verbose
-- cargo doc
+  - |
+      travis-cargo build &&
+      travis-cargo test &&
+      travis-cargo bench &&
+      travis-cargo --only stable doc
+
 notifications:
   email:
     on_success: never
+
+
 env:
   global:
-  - secure: fjaqUKTiwvw4jlrgDtEWhawPZ3nybz9KeS+o5hs/KADSc3O7O/FCGNkuPeDEixLRGiS31gfM4+yPQRF40MAHRYda495Q4SEdd4yFA4jJebZUq85S6vlbg/YgNNzN6becdTV3VtfnDg/RcHpz8wS42lkXwq6LGCoWrh8GU8BGr8t//EcBYd8yQ/ihS6OBUm1BLe6oQc7/FRl0CSA65orh3NwXmytY2dOMG2nquk/WZDQaBLDw8Metfdz3y4mjGTLNPEnfaYEie43yxII0SS1C+KM3Bqqj6mx5dtUTMIE91u4k2IQNbbAZjQXSfDJfVeSX3rPyTQx0v7lFhBUlrL0NMS59/hrbpMJIxg7Kfg4FsFh9ttb2yU0IQBfbSMjFOpUyA0WmwWjmNruh5bkdiSO1ueyk5Sv9fmt7j8oGRH5gwpYfOovRrTa4GZ4HheNT2xmAtnw+jD3OPoSzHXpmKJdn7xSpT9vD0tepvu0poxqwekKtBgY4FGbCk40sL2s1y9c4O+NUv+ZtBujEs5L9kpIgMrKdXbanU343kwbDNnyesg80pPBPwvQ2W+6ZBg/Klgf7DUwuM1UcgJ6CcHOvXO3TdWuCpeWilD2uxIUZaiVYnXL26YgRoX7cZfLxH126m/q7gI3cgYg/gJmsHUVq1Djcn8Oz83J4PU+Ckm0KfJgvTDo=
-after_success: |
-  [ $TRAVIS_BRANCH = master ] &&
-  [ $TRAVIS_PULL_REQUEST = false ] &&
-  echo '<meta http-equiv=refresh content=0;url=procure/index.html>' > target/doc/index.html &&
-  pip install ghp-import --user $USER &&
-  $HOME/.local/bin/ghp-import -n target/doc &&
-  git push -fq https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
+    # Override the default `--features unstable` used for the nightly branch
+    - TRAVIS_CARGO_NIGHTLY_FEATURE=""

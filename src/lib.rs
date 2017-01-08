@@ -1,8 +1,6 @@
 //! Procure is a library for grabbing various types of metrics from a
 //! Linux system.
 
-#![feature(conservative_impl_trait)]
-
 // Externs
 extern crate sysconf;
 
