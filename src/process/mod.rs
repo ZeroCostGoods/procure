@@ -3,8 +3,20 @@
 use std::fs;
 use std::iter::Iterator;
 
-fn pids_from_path(proc_path: &str) -> impl Iterator<Item=i32> {
-    fs::read_dir(proc_path).unwrap()
+pub struct Pids {
+    iter: Box<Iterator<Item=i32>>,
+}
+
+impl Iterator for Pids {
+    type Item = i32;
+
+    fn next(&mut self) -> Option<i32> {
+        self.iter.next()
+    }
+}
+
+fn pids_from_path(proc_path: &str) -> Pids {
+    let iter = fs::read_dir(proc_path).unwrap()
         // Process directories might have gone away since
         // the directory was read. It's fine to ignore those.
         .filter_map(|entry| entry.ok())
@@ -12,10 +24,11 @@ fn pids_from_path(proc_path: &str) -> impl Iterator<Item=i32> {
         // parse as unicode.
         .filter_map(|entry| entry.file_name().into_string().ok())
         // Remove any entries that can't be converted to an integer.
-        .filter_map(|entry| entry.parse::<i32>().ok())
+        .filter_map(|entry| entry.parse::<i32>().ok());
+    Pids{iter: Box::new(iter)}
 }
 
-pub fn pids() -> impl Iterator<Item=i32> {
+pub fn pids() -> Pids {
     pids_from_path("/proc")
 }
 
