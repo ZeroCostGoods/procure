@@ -12,7 +12,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-procure = "*"
+procure = "0.1.2"
 ```
 
 and this to your crate root:
