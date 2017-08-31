@@ -8,4 +8,4 @@ license = "MIT OR Apache-2.0"
 description = "Rust Library for interfacing with /proc"
 
 [dependencies]
-sysconf = "0.1"
+sysconf = "0.3"
